@@ -39,7 +39,10 @@ export default async function handler(req, res) {
         if (cacheData.result) {
           // Cache hit, return saved meals without calling Anthropic
           const cachedMeals = JSON.parse(cacheData.result);
-          return res.status(200).json({ meals: cachedMeals, cached: true });
+          if (Array.isArray(cachedMeals)) {
+            return res.status(200).json({ meals: cachedMeals, cached: true });
+          }
+          console.warn('Cached value was not an array, ignoring cache and refetching');
         }
       } catch (cacheErr) {
         // Cache read failed, just continue to Anthropic
@@ -92,6 +95,15 @@ Suggest 4 meals I can make. Respond ONLY with valid JSON, no extra text, no mark
     } catch (parseErr) {
       console.error('Failed to parse Claude response as JSON:', clean);
       return res.status(502).json({ error: 'Meal suggestion service failed', detail: `Could not parse response: ${parseErr.message}` });
+    }
+
+    if (!Array.isArray(meals)) {
+      if (meals && Array.isArray(meals.meals)) {
+        meals = meals.meals;
+      } else {
+        console.error('Claude response was not an array:', clean);
+        return res.status(502).json({ error: 'Meal suggestion service failed', detail: 'Response was not a list of meals' });
+      }
     }
 
     // Save to cache with a 24 hour expiry (86400 seconds)
