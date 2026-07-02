@@ -106,6 +106,7 @@ window.fetchPantrySuggestions = async function() {
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.detail || data.error || `Request failed (${res.status})`);
+    if (!Array.isArray(data.meals)) throw new Error('Response was not a list of meals');
     renderPantryMealCards(data.meals);
   } catch(e) {
     grid.innerHTML = `<div class="spinner-wrap">Something went wrong.<br><span style="font-size:11px;opacity:0.7;">${e.message}</span></div>`;
