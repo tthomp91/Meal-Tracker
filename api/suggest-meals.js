@@ -79,14 +79,20 @@ Suggest 4 meals I can make. Respond ONLY with valid JSON, no extra text, no mark
 
     if (!anthropicRes.ok) {
       const errText = await anthropicRes.text();
-      console.error('Anthropic API error:', errText);
-      return res.status(502).json({ error: 'Meal suggestion service failed' });
+      console.error('Anthropic API error:', anthropicRes.status, errText);
+      return res.status(502).json({ error: 'Meal suggestion service failed', detail: `Anthropic returned ${anthropicRes.status}: ${errText}` });
     }
 
     const data  = await anthropicRes.json();
     const text  = data.content[0].text.trim();
     const clean = text.replace(/```json|```/g, '').trim();
-    const meals = JSON.parse(clean);
+    let meals;
+    try {
+      meals = JSON.parse(clean);
+    } catch (parseErr) {
+      console.error('Failed to parse Claude response as JSON:', clean);
+      return res.status(502).json({ error: 'Meal suggestion service failed', detail: `Could not parse response: ${parseErr.message}` });
+    }
 
     // Save to cache with a 24 hour expiry (86400 seconds)
     if (kvUrl && kvToken) {
@@ -108,6 +114,6 @@ Suggest 4 meals I can make. Respond ONLY with valid JSON, no extra text, no mark
     return res.status(200).json({ meals });
   } catch (err) {
     console.error('Server error:', err);
-    return res.status(500).json({ error: 'Something went wrong' });
+    return res.status(500).json({ error: 'Something went wrong', detail: err.message });
   }
 }
