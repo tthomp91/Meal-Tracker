@@ -126,7 +126,7 @@ function renderPantryMealCards(meals) {
     const card = document.createElement('div');
     card.className = 'meal-card';
     const usedHtml    = (m.usedIngredients    || []).map(i => `<span style="background:var(--meal-green-l);color:var(--meal-green);border:1px solid var(--meal-green-b);border-radius:6px;padding:2px 7px;font-size:11px;font-weight:700;">✓ ${i}</span>`).join('');
-    const missingHtml = (m.missingIngredients || []).map(i => `<span style="background:#FFF7ED;color:#EA580C;border:1px solid #FED7AA;border-radius:6px;padding:2px 7px;font-size:11px;font-weight:700;">+ ${i}</span>`).join('');
+    const missingHtml = (m.missingIngredients || []).map(i => `<span style="background:rgba(234,88,12,0.16);color:#FB923C;border:1px solid rgba(234,88,12,0.4);border-radius:6px;padding:2px 7px;font-size:11px;font-weight:700;">+ ${i}</span>`).join('');
     card.innerHTML = `
       <div class="meal-img-ph" style="font-size:52px;">${m.emoji || '🍽️'}</div>
       <div class="meal-body">
