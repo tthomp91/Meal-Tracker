@@ -47,7 +47,7 @@
 .suggest-btn:hover { opacity: 0.88; }
 .suggest-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.meal-grid { display: flex; flex-direction: column; gap: 12px; }
+.meal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
 .meal-card {
   background: var(--card);
   border-radius: 14px;
