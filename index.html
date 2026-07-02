@@ -8,7 +8,116 @@ const MEAL_API   = '8a4c13fcd0a74d8aaaf0fc67118b8740';
 const CUISINES   = ['Any','American','Italian','Mexican','Asian','Indian','Thai','Japanese'];
 let selectedCuisine = 'Any';
 let mealPlan       = JSON.parse(localStorage.getItem('mealplan')    || '{}');
-let groceryChecked = JSON.parse(localStorage.getItem('grocerychecked') || '[]');
+let groceryChecked = JSON.parse(localStorage.getItem('grocerychecked') || '[]');<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Meal Planner">
+<title>Meal Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/meals.css">
+<link rel="stylesheet" href="css/modals.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="topnav-brand">Meal <span>Planner</span></div>
+  <div class="topnav-date" id="sidebar-date"></div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="page-view active" id="page-meals">
+    <div class="page-header">
+      <div>
+        <div class="page-header-title">Meal Planner</div>
+        <div class="page-header-sub" id="meal-header-sub">Plan your week</div>
+      </div>
+    </div>
+    <div class="scroll-area">
+      <div class="meal-tab-row">
+        <button class="meal-tab active" onclick="showMealTab('suggest')">Suggest</button>
+        <button class="meal-tab" onclick="showMealTab('favorites')">⭐ Favorites</button>
+        <button class="meal-tab" onclick="showMealTab('plan')">This Week</button>
+        <button class="meal-tab" onclick="showMealTab('grocery')">Grocery List</button>
+      </div>
+
+      <!-- Suggest -->
+      <div class="meal-page active" id="meal-suggest">
+
+        <!-- What's in your fridge -->
+        <div id="pantry-box" style="background:var(--card);border-radius:14px;border:1.5px solid var(--border);box-shadow:0 2px 8px var(--shadow);padding:16px;margin-bottom:18px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <span style="font-size:22px;">🧑‍🍳</span>
+            <div>
+              <div style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;color:var(--text);">What's in your fridge?</div>
+              <div style="font-size:12px;color:var(--muted);font-weight:600;">Get meal ideas from ingredients you already have</div>
+            </div>
+          </div>
+          <div id="pantry-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;min-height:32px;"></div>
+          <div style="display:flex;gap:8px;">
+            <input id="pantry-input" type="text" placeholder="e.g. chicken, rice, garlic…"
+              style="flex:1;padding:10px 14px;border-radius:10px;border:1.5px solid var(--border);font-size:14px;font-family:inherit;background:var(--cream);color:var(--text);outline:none;"
+              onkeydown="if(event.key==='Enter'||event.key===',')addPantryTag(event)">
+            <button onclick="addPantryTag()" style="padding:10px 16px;border-radius:10px;border:none;background:var(--meal-orange);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">Add</button>
+          </div>
+          <button id="pantry-suggest-btn" onclick="fetchPantrySuggestions()"
+            style="width:100%;margin-top:12px;padding:13px;border-radius:12px;border:none;background:var(--meal-green);color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;display:none;transition:opacity .15s;">
+            🍽️ Suggest Meals from My Ingredients
+          </button>
+        </div>
+
+        <div class="section-label">Search meals</div>
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <input id="meal-search-input" type="text" placeholder="e.g. chicken, tacos, soup…"
+            style="flex:1;padding:11px 14px;border-radius:10px;border:1.5px solid var(--border);font-size:14px;font-family:inherit;background:var(--card);color:var(--text);outline:none;"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();fetchSuggestions();}">
+          <button onclick="document.getElementById('meal-search-input').value='';fetchSuggestions()"
+            style="padding:11px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Clear</button>
+        </div>
+
+        <div class="section-label">Or browse by cuisine</div>
+        <div class="cuisine-row" id="cuisine-row"></div>
+        <div style="font-size:11px;color:var(--muted);font-weight:600;margin:-8px 0 14px;">Searching a term checks all cuisines unless you pick one above</div>
+        <button class="suggest-btn" id="suggest-btn" onclick="fetchSuggestions()">Find Meal Ideas</button>
+        <div class="meal-grid" id="meal-grid"></div>
+      </div>
+
+      <!-- Favorites -->
+      <div class="meal-page" id="meal-favorites">
+        <div id="favorites-list"></div>
+      </div>
+
+      <!-- Plan -->
+      <div class="meal-page" id="meal-plan">
+        <div id="plan-list"></div>
+      </div>
+
+      <!-- Grocery -->
+      <div class="meal-page" id="meal-grocery">
+        <div class="grocery-progress" id="grocery-progress"></div>
+        <div id="grocery-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recipe Sheet -->
+<div class="recipe-overlay" id="recipe-ov" style="display:none" onclick="if(event.target===this)closeRecipe()">
+  <div class="recipe-sheet" id="recipe-sheet">
+    <div class="spinner-wrap"><div class="spinner"></div><br>Loading recipe...</div>
+  </div>
+</div>
+
+<script type="module" src="js/meals.js?v=2"></script>
+</body>
+</html>
 let groceryItems   = JSON.parse(localStorage.getItem('groceryitems')   || '[]');
 let favorites      = JSON.parse(localStorage.getItem('mealfavorites')  || '[]');
 
