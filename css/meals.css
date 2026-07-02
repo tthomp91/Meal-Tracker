@@ -1,0 +1,117 @@
+/* ── MEALS ── */
+.meal-tab-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.meal-tab {
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--muted);
+  transition: all .15s;
+  font-family: inherit;
+}
+.meal-tab.active { background: var(--meal-green); color: #fff; border-color: var(--meal-green); }
+.meal-page { display: none; }
+.meal-page.active { display: block; }
+
+.cuisine-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 16px; }
+.c-pill {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--muted);
+  transition: all .15s;
+  font-family: inherit;
+}
+.c-pill.on { background: var(--meal-orange); color: #fff; border-color: var(--meal-orange); }
+.suggest-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: var(--meal-green);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity .15s;
+  margin-bottom: 18px;
+}
+.suggest-btn:hover { opacity: 0.88; }
+.suggest-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.meal-grid { display: flex; flex-direction: column; gap: 12px; }
+.meal-card {
+  background: var(--card);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.meal-img { width: 100%; height: 160px; object-fit: cover; display: block; }
+.meal-img-ph { width: 100%; height: 160px; background: linear-gradient(135deg,#f0fdf4,#dcfce7); display: flex; align-items: center; justify-content: center; font-size: 42px; }
+.meal-body { padding: 12px 14px; }
+.meal-name { font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 900; margin-bottom: 4px; letter-spacing: -0.2px; }
+.meal-meta { font-size: 12px; color: var(--muted); display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.meal-actions { display: flex; gap: 8px; }
+.btn-add {
+  flex: 1; padding: 9px; border-radius: 9px; border: none;
+  background: var(--meal-green); color: #fff; font-size: 13px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: opacity .15s;
+}
+.btn-add:hover { opacity: 0.85; }
+.btn-add.added { background: var(--meal-green-b); color: var(--meal-green); }
+.btn-recipe {
+  padding: 9px 14px; border-radius: 9px; border: 1.5px solid var(--border);
+  background: var(--card); color: var(--muted); font-size: 13px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: all .15s;
+}
+.btn-recipe:hover { color: var(--text); }
+
+.plan-day { background: var(--card); border-radius: 12px; border: 1.5px solid var(--border); margin-bottom: 10px; overflow: hidden; box-shadow: 0 1px 4px var(--shadow); }
+.plan-day-head { padding: 10px 14px; background: var(--meal-green-l); border-bottom: 1px solid var(--meal-green-b); display: flex; align-items: center; justify-content: space-between; }
+.plan-day-name { font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 900; color: var(--meal-green); }
+.plan-meal-row { padding: 11px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+.plan-meal-row:last-child { border-bottom: none; }
+.plan-meal-name { flex: 1; font-size: 14px; font-weight: 600; }
+.btn-remove { padding: 5px 10px; border-radius: 7px; border: 1px solid #fee2e2; background: #fef2f2; color: #dc2626; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+.grocery-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--card); border-radius: 9px; margin-bottom: 5px; border: 1.5px solid var(--border); cursor: pointer; transition: all .15s; }
+.grocery-item.checked { opacity: 0.4; }
+.grocery-item.checked .gi-name { text-decoration: line-through; }
+.gi-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+.grocery-item.checked .gi-check { background: var(--meal-green); border-color: var(--meal-green); color: #fff; font-size: 12px; }
+.gi-name { font-size: 14px; font-weight: 600; flex: 1; }
+.gi-amount { font-size: 12px; color: var(--muted); }
+.grocery-section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin: 14px 0 6px 2px; }
+.empty-state { padding: 40px 20px; text-align: center; color: var(--muted); font-size: 14px; font-weight: 600; line-height: 1.6; }
+.grocery-progress { font-size: 13px; color: var(--muted); margin-bottom: 12px; font-weight: 600; }
+.clear-btn { width: 100%; padding: 11px; border-radius: 11px; border: 1.5px solid #fee2e2; background: #fef2f2; color: #dc2626; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 14px; }
+.btn-fav {
+  padding: 9px 12px; border-radius: 9px; border: 1.5px solid var(--border);
+  background: var(--card); font-size: 16px; cursor: pointer;
+  transition: all .15s; line-height: 1;
+}
+.btn-fav.faved { background: #FEF9C3; border-color: #FDE047; }
+.fav-card {
+  background: var(--card); border-radius: 14px; border: 1.5px solid var(--border);
+  box-shadow: 0 2px 8px var(--shadow); margin-bottom: 10px; overflow: hidden;
+  display: flex; align-items: center;
+}
+.fav-img { width: 80px; height: 80px; object-fit: cover; flex-shrink: 0; }
+.fav-img-ph { width: 80px; height: 80px; background: linear-gradient(135deg,#f0fdf4,#dcfce7); display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+.fav-body { flex: 1; padding: 12px 14px; min-width: 0; }
+.fav-name { font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 900; margin-bottom: 3px; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fav-meta { font-size: 12px; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+.fav-actions { display: flex; gap: 6px; }
+.fav-btn-sm { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; border: 1.5px solid var(--border); background: var(--card); color: var(--muted); transition: all .15s; }
+.fav-btn-sm:hover { color: var(--text); }
+.fav-btn-sm.green { background: var(--meal-green); color: #fff; border-color: var(--meal-green); }
+.fav-btn-sm.red { background: #fef2f2; color: #dc2626; border-color: #fee2e2; }
