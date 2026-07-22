@@ -10,10 +10,12 @@ let selectedCuisine = 'Any';
 let mealPlan       = JSON.parse(localStorage.getItem('mealplan')    || '{}');
 let groceryChecked = JSON.parse(localStorage.getItem('grocerychecked') || '[]');
 let groceryItems   = JSON.parse(localStorage.getItem('groceryitems')   || '[]');
+let groceryRemoved = JSON.parse(localStorage.getItem('groceryremoved') || '[]');
 let favorites      = JSON.parse(localStorage.getItem('mealfavorites')  || '[]');
 
 function saveMealPlan()  { localStorage.setItem('mealplan',      JSON.stringify(mealPlan));       updateMealSub(); }
 function saveChecked()   { localStorage.setItem('grocerychecked', JSON.stringify(groceryChecked)); }
+function saveRemoved()   { localStorage.setItem('groceryremoved', JSON.stringify(groceryRemoved)); }
 function saveFavorites() { localStorage.setItem('mealfavorites',  JSON.stringify(favorites));      }
 function isFav(id)       { return favorites.some(f => f.id === id); }
 
@@ -159,6 +161,8 @@ window.addPantryMealToPlan = function(title, emoji, btn, usedIngredients = [], m
   const ingredients = [...usedIngredients, ...missingIngredients];
   if (!mealPlan.week.find(m => m.title === title)) {
     mealPlan.week.push({ id, title, image: '', emoji, ingredients });
+    groceryRemoved = [];
+    saveRemoved();
   }
   saveMealPlan();
   if (btn) { btn.textContent = '✓ Added'; btn.classList.add('added'); }
@@ -282,6 +286,8 @@ window.addMealToPlan = async function(id, title, image) {
   }
 
   mealPlan.week.push({ id, title, image, ingredients });
+  groceryRemoved = [];
+  saveRemoved();
   saveMealPlan();
   if (btn) { btn.textContent = '✓ Added'; btn.classList.add('added'); btn.disabled = false; }
   showToast(`🍽️ "${title}" added to your plan!`);
@@ -315,7 +321,7 @@ function buildGroceryText() {
   (mealPlan.week || []).forEach(m => {
     if (m.ingredients) m.ingredients.forEach(ing => { if (!allIngredients.includes(ing)) allIngredients.push(ing); });
   });
-  return allIngredients;
+  return allIngredients.filter(ing => !groceryRemoved.includes(ing));
 }
 
 function renderGrocery() {
@@ -361,7 +367,14 @@ function renderGrocery() {
   const clearBtn = document.createElement('button');
   clearBtn.className   = 'clear-btn';
   clearBtn.textContent = 'Clear checked items';
-  clearBtn.onclick     = () => { groceryChecked = []; saveChecked(); renderGrocery(); };
+  clearBtn.onclick     = () => {
+    const stillChecked = items.filter(i => groceryChecked.includes(i));
+    groceryRemoved = [...groceryRemoved, ...stillChecked];
+    groceryChecked = groceryChecked.filter(i => !stillChecked.includes(i));
+    saveRemoved();
+    saveChecked();
+    renderGrocery();
+  };
   el.appendChild(clearBtn);
 }
 
