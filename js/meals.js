@@ -323,6 +323,53 @@ function buildGroceryText() {
   return allIngredients.filter(ing => !groceryRemoved.includes(ing));
 }
 
+function currentGroceryItems() {
+  return groceryItems.length ? groceryItems : buildGroceryText();
+}
+
+function groceryListAsText() {
+  const items = currentGroceryItems();
+  const unchecked = items.filter(i => !groceryChecked.includes(i));
+  const checked   = items.filter(i => groceryChecked.includes(i));
+  let text = 'Grocery List\n';
+  unchecked.forEach(i => { text += `☐ ${i}\n`; });
+  checked.forEach(i => { text += `☑ ${i}\n`; });
+  return text.trim();
+}
+
+window.shareGroceryList = async function() {
+  if (!currentGroceryItems().length) { showToast('Your grocery list is empty'); return; }
+  const text = groceryListAsText();
+  if (navigator.share) {
+    try { await navigator.share({ title: 'Grocery List', text }); }
+    catch(e) { /* user cancelled the share sheet */ }
+  } else {
+    window.copyGroceryList();
+  }
+};
+
+window.copyGroceryList = async function() {
+  if (!currentGroceryItems().length) { showToast('Your grocery list is empty'); return; }
+  try {
+    await navigator.clipboard.writeText(groceryListAsText());
+    showToast('📋 Copied to clipboard!');
+  } catch(e) {
+    showToast('Could not copy. Try again.');
+  }
+};
+
+window.emailGroceryList = function() {
+  if (!currentGroceryItems().length) { showToast('Your grocery list is empty'); return; }
+  const body = encodeURIComponent(groceryListAsText());
+  window.location.href = `mailto:?subject=${encodeURIComponent('Grocery List')}&body=${body}`;
+};
+
+window.textGroceryList = function() {
+  if (!currentGroceryItems().length) { showToast('Your grocery list is empty'); return; }
+  const body = encodeURIComponent(groceryListAsText());
+  window.location.href = `sms:?&body=${body}`;
+};
+
 function renderGrocery() {
   const el       = document.getElementById('grocery-list');
   const progress = document.getElementById('grocery-progress');
@@ -335,6 +382,16 @@ function renderGrocery() {
   }
   const done  = items.filter(i => groceryChecked.includes(i)).length;
   progress.textContent = `${done} of ${items.length} items checked`;
+
+  const exportRow = document.createElement('div');
+  exportRow.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;';
+  const exportBtnStyle = 'padding:8px 13px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;';
+  exportRow.innerHTML = `
+    <button style="${exportBtnStyle}" onclick="shareGroceryList()">📤 Share</button>
+    <button style="${exportBtnStyle}" onclick="copyGroceryList()">📋 Copy</button>
+    <button style="${exportBtnStyle}" onclick="emailGroceryList()">✉️ Email</button>
+    <button style="${exportBtnStyle}" onclick="textGroceryList()">💬 Text</button>`;
+  el.appendChild(exportRow);
 
   const allChecked = done === items.length;
   const checkAllBtn = document.createElement('button');
