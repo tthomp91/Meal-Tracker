@@ -330,6 +330,19 @@ function renderGrocery() {
   }
   const done  = items.filter(i => groceryChecked.includes(i)).length;
   progress.textContent = `${done} of ${items.length} items checked`;
+
+  const allChecked = done === items.length;
+  const checkAllBtn = document.createElement('button');
+  checkAllBtn.className   = 'clear-btn';
+  checkAllBtn.style.cssText = 'border-color:var(--meal-green-b);background:var(--meal-green-l);color:var(--meal-green);margin-top:0;margin-bottom:10px;';
+  checkAllBtn.textContent = allChecked ? 'Uncheck all items' : 'Check all items';
+  checkAllBtn.onclick     = () => {
+    groceryChecked = allChecked ? [] : [...items];
+    saveChecked();
+    renderGrocery();
+  };
+  el.appendChild(checkAllBtn);
+
   items.forEach(item => {
     const checked = groceryChecked.includes(item);
     const row     = document.createElement('div');
