@@ -158,9 +158,8 @@ function renderPantryMealCards(meals) {
 window.addPantryMealToPlan = function(title, emoji, btn, usedIngredients = [], missingIngredients = []) {
   if (!mealPlan.week) mealPlan.week = [];
   const id = 'pantry_' + Date.now();
-  const ingredients = [...usedIngredients, ...missingIngredients];
   if (!mealPlan.week.find(m => m.title === title)) {
-    mealPlan.week.push({ id, title, image: '', emoji, ingredients });
+    mealPlan.week.push({ id, title, image: '', emoji, ingredients: missingIngredients });
     groceryRemoved = [];
     saveRemoved();
   }
