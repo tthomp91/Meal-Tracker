@@ -146,18 +146,19 @@ function renderPantryMealCards(meals) {
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">${usedHtml}${missingHtml}</div>
         <div class="meal-actions">
-          <button class="btn-add" onclick="addPantryMealToPlan('${m.title.replace(/'/g,"\\'")}','${m.emoji || '🍽️'}',this)">+ Add to Plan</button>
+          <button class="btn-add" onclick='addPantryMealToPlan(${JSON.stringify(m.title)}, ${JSON.stringify(m.emoji || "🍽️")}, this, ${JSON.stringify(m.usedIngredients || [])}, ${JSON.stringify(m.missingIngredients || [])})'>+ Add to Plan</button>
         </div>
       </div>`;
     grid.appendChild(card);
   });
 }
 
-window.addPantryMealToPlan = function(title, emoji, btn) {
+window.addPantryMealToPlan = function(title, emoji, btn, usedIngredients = [], missingIngredients = []) {
   if (!mealPlan.week) mealPlan.week = [];
   const id = 'pantry_' + Date.now();
+  const ingredients = [...usedIngredients, ...missingIngredients];
   if (!mealPlan.week.find(m => m.title === title)) {
-    mealPlan.week.push({ id, title, image: '', emoji });
+    mealPlan.week.push({ id, title, image: '', emoji, ingredients });
   }
   saveMealPlan();
   if (btn) { btn.textContent = '✓ Added'; btn.classList.add('added'); }
@@ -264,12 +265,25 @@ window.removeFav = function(id) {
   renderFavorites();
 };
 
-window.addMealToPlan = function(id, title, image) {
+window.addMealToPlan = async function(id, title, image) {
   if (!mealPlan.week) mealPlan.week = [];
-  if (!mealPlan.week.find(m => m.id === id)) mealPlan.week.push({ id, title, image });
-  saveMealPlan();
+  if (mealPlan.week.find(m => m.id === id)) return;
+
   const btn = document.getElementById('addbtn-' + id);
-  if (btn) { btn.textContent = '✓ Added'; btn.classList.add('added'); }
+  if (btn) { btn.textContent = 'Adding...'; btn.disabled = true; }
+
+  let ingredients = [];
+  try {
+    const res = await fetch(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${MEAL_API}&includeNutrition=false`);
+    const r   = await res.json();
+    ingredients = (r.extendedIngredients || []).map(i => i.original);
+  } catch (e) {
+    console.warn('Could not fetch ingredients for', title, e);
+  }
+
+  mealPlan.week.push({ id, title, image, ingredients });
+  saveMealPlan();
+  if (btn) { btn.textContent = '✓ Added'; btn.classList.add('added'); btn.disabled = false; }
   showToast(`🍽️ "${title}" added to your plan!`);
 };
 
